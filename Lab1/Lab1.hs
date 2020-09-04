@@ -14,15 +14,12 @@ power n k  = n * power n (k-1)
 -- A -------------------------
 -- stepsPower n k gives the number of steps that
 -- power n k takes to compute
-
 stepsPower :: Integer -> Integer -> Integer
 stepsPower n k = k+1 
 
 
 -- B -------------------------
 -- power1 n k raises n to the k:th power
--- with O(k^2) complexity
-
 power1 :: Integer -> Integer -> Integer
 power1 n k
   | k < 0 = error "power: negative argument"
@@ -32,7 +29,6 @@ power1 n k = product (replicate (fromInteger k) (fromInteger n))
 
 -- C -------------------------
 -- power2 n k raises n to the k:th power
--- with O(k*log k) complexity
 power2 :: Integer -> Integer -> Integer
 power2 n k
   | k < 0 = error "power: negative argument"
@@ -44,9 +40,10 @@ power2 n k
 
 -- D -------------------------
 {- 
-
-<Describe your test cases here>
-
+I provide two lists of equal length with varying combinations of large and small numbers
+in the function doTests. I want to cover large numbers, small numbers, and 0. Separately, 
+I test negative bases and exponents, in the function doNegativeTests, to see that errors
+are thrown.
  -}
 
 -- comparePower1
@@ -67,7 +64,12 @@ testPowerFunctions (n:ns) (k:ks) = (comparePower1 n k) && (comparePower2 n k)
   && (testPowerFunctions ns ks)
 
 doTests :: Bool
-doTests = testPowerFunctions [0, 0, 1, 1, 2, 999, 10, 50000000, 51] [0, 1, 0, 1, 10, 999, 10000, 51, 5000]
+doTests = testPowerFunctions [0, 0, 1, 1, 2, 999, 10, 50000000, 51, 3] [0, 1, 0, 1, 10, 999, 10000, 51, 5000, 4]
+
+doNegativeTests :: Bool
+doNegativeTests = testPowerFunctions [0, -0, -3, 1000] [-0, 0, 2, -500] && 
+                  doNegativeTests'
+doNegativeTests' = testPowerFunctions [-0, 0, 3, -1000] [0, -0, -2, 500]
 
 -- Displaying functions:
 getHeaders x n = "n" ++ (getSpaces 1 (fromInteger n)) ++ 
@@ -79,7 +81,9 @@ getHeaders x n = "n" ++ (getSpaces 1 (fromInteger n)) ++
 table :: Integer -> Integer -> IO ()
 table x n = putStr (unlines ([getHeaders x n] ++ getLines x [0..n] n))
 
--- Get a single line of values separated by spaces 
+-- Get a single line of values separated by spaces. Definitely a hack,
+-- but it is only for the string formatting part of the table, to align
+-- the columns.
 getLine' :: Integer -> Integer -> Integer -> String
 getLine' x k n = show k ++ (getSpaces (fromInteger k) (fromInteger n))
   ++ show (power x k) ++ (getSpaces (fromInteger (power2 x k)) 
