@@ -40,11 +40,11 @@ power2 n k
 
 -- D -------------------------
 {- 
-I provide two lists of equal length with varying combinations of large and small numbers
-in the function doTests. I want to cover large numbers, small numbers, and 0. Separately, 
-I test negative bases and exponents, in the function doNegativeTests, to see that errors
-are thrown.
- -}
+I provide two lists of equal length with varying combinations of large 
+and small numbers in the function doTests. I want to cover large 
+numbers, small numbers, and 0. Separately, I test negative bases and 
+exponents, in the function doNegativeTests, to see that errors are thrown.
+-}
 
 -- comparePower1
 comparePower1 :: Integer -> Integer -> Bool
@@ -64,7 +64,8 @@ testPowerFunctions (n:ns) (k:ks) = (comparePower1 n k) && (comparePower2 n k)
   && (testPowerFunctions ns ks)
 
 doTests :: Bool
-doTests = testPowerFunctions [0, 0, 1, 1, 2, 999, 10, 50000000, 51, 3] [0, 1, 0, 1, 10, 999, 10000, 51, 5000, 4]
+doTests = testPowerFunctions [0, 0, 1, 1, 2, 999, 10, 50000000, 51, 3] 
+                             [0, 1, 0, 1, 10, 999, 10000, 51, 5000, 4]
 
 doNegativeTests :: Bool
 doNegativeTests = testPowerFunctions [0, -0, -3, 1000] [-0, 0, 2, -500] && 
