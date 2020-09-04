@@ -5,6 +5,10 @@ L1 2020-09-01
 
 L2 2020-09-04
 ------------------------
+let & where synonyms
 
-
-
+fun x = 
+    let x' = abs x in
+        x' + 5
+fun x = x' + 5 where
+    x' = abs x
