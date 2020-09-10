@@ -1,3 +1,5 @@
+-- Authors: Emil Logren & Daniel Ericsson, Group 46
+
 module Blackjack where
 
 import Cards

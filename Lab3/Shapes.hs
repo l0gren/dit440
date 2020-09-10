@@ -1,3 +1,5 @@
+-- Authors: Emil Logren & Daniel Ericsson, Group 46
+
 -- | Types and functions for shapes. The list of all tetris pieces.
 module Shapes where
 import Data.List(transpose)
@@ -75,19 +77,27 @@ allShapes = [S (makeSquares s) | s <- shapes]
 
 -- ** A01
 emptyShape :: (Int,Int) -> Shape
-emptyShape = error "A01 emptyShape undefined"
+emptyShape (c, r) = S (replicate r (emptyRow c))
+
+emptyRow :: Int -> Row
+emptyRow c = replicate c Nothing
 
 -- ** A02
 
 -- | The size (width and height) of a shape
 shapeSize :: Shape -> (Int,Int)
-shapeSize = error "A02 shapeSize undefined"
+shapeSize (S (r:rs)) = (length r, length (r:rs))  
 
 -- ** A03
 
 -- | Count how many non-empty squares a shape contains
 blockCount :: Shape -> Int
-blockCount = error "A03 blockCount undefined"
+blockCount (S rs) = blockCount' (concat rs)
+
+blockCount' [] = 0
+blockCount' (r:rs) 
+    | r == Nothing = 0 + blockCount' rs
+    | otherwise = 1 + blockCount' rs
 
 -- * The Shape invariant
 
@@ -95,7 +105,12 @@ blockCount = error "A03 blockCount undefined"
 -- | Shape invariant (shapes have at least one row, at least one column,
 -- and are rectangular)
 prop_Shape :: Shape -> Bool
-prop_Shape = error "A04 prop_Shape undefined"
+prop_Shape (S (r:rs)) = length (r:rs) > 0 && length r > 0 && checkRect (length r) rs
+
+-- Check if list of lists is rectangular, being of same width as provided
+checkRect :: Int -> [Row] -> Bool
+checkRect _ [] = True
+checkRect w (r:rs) = length r == w && checkRect w rs
 
 -- * Test data generators
 

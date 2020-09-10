@@ -1,3 +1,5 @@
+-- Authors: Emil Logren & Daniel Ericsson, Group 46
+
 -- | The Tetris game (main module)
 module Main where
 import ConsoleGUI       -- cabal install ansi-terminal 
