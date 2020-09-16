@@ -127,14 +127,19 @@ shuffle (d:ds) cs = card : (shuffle ds deck)
     where
         (card, deck) = removeCard d cs
 
+-- Split deck at random point, take card from break:
+-- either first from second half or last from first half.
+-- Return card and rest of deck recombined 
 removeCard :: Double -> Deck -> (Card, Deck)
 removeCard _ [c] = (c, [])
 removeCard d cs =  (card, deck)
     where
         split = splitAt (fromIntegral (round (fromIntegral(length cs)*d))) cs
         (card, deck)
-            | length (snd split) > 0 = (head (snd split), ((fst split) ++ (tail (snd split))))
-            | otherwise = (last (fst split), ((init (fst split)) ++ (snd split)))
+            | length (snd split) > 0 = (head (snd split), ((fst split) ++ 
+                                       (tail (snd split))))
+            | otherwise              = (last (fst split), ((init (fst split)) ++ 
+                                       (snd split)))
 
 -- Task B5
 belongsTo :: Card -> Deck -> Bool
