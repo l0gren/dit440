@@ -51,7 +51,7 @@ value hand = adjustAces (sumHand hand) hand
 -- Get raw sum of hand
 sumHand :: Hand -> Int
 sumHand [] = 0
-sumHand (c:cs) = (valueCard c) + (value cs) 
+sumHand (c:cs) = (valueCard c) + (sumHand cs) 
 
 valueCard :: Card -> Int
 valueCard c = valueRank (rank c)
@@ -71,22 +71,17 @@ numberOfAces (c:cs) = case rank c of
 
 -- Counts aces as ones if score exceeds 21
 adjustAces :: Int -> Hand -> Int
-adjustAces score hand = case compare score 21 of
-    GT -> score - (10*(numberOfAces hand))
-    EQ -> score
-    LT -> score
+adjustAces score hand 
+    | score > 21 = score - (10*(numberOfAces hand))
+    | otherwise = score
 
 --Task A4
 gameOver :: Hand -> Bool
-gameOver hand = case compare (value hand) 21 of
-    GT -> True
-    EQ -> False
-    LT -> False
+gameOver hand = value hand > 21
 
 winner :: Hand -> Hand -> Player
 winner guest bank
     | gameOver guest            = Bank
-    | value guest == value bank = Bank
     | gameOver bank             = Guest
     | value guest > value bank  = Guest
     | otherwise                 = Bank
@@ -118,10 +113,9 @@ playBank :: Deck -> Hand
 playBank deck = playBank' deck []
 
 playBank' :: Deck -> Hand -> Hand
-playBank' deck hand = case compare (value hand') 16 of
-    LT -> playBank' deck' hand'
-    EQ -> hand'
-    GT -> hand'
+playBank' deck hand 
+    | value hand' < 16 = playBank' deck' hand'
+    | otherwise = hand'
     where
         (deck', hand') = draw deck hand
 
