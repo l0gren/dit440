@@ -117,7 +117,7 @@ checkRect w (r:rs) = length r == w && checkRect w rs
 -- ** A05
 -- | A random generator for colours
 rColour :: Gen Colour
-rColour = error "A05 rColour undefined"
+rColour = elements [Black, Red, Green, Yellow, Blue, Purple, Cyan, Grey]
 
 instance Arbitrary Colour where
   arbitrary = rColour
@@ -125,7 +125,7 @@ instance Arbitrary Colour where
 -- ** A06
 -- | A random generator for shapes
 rShape :: Gen Shape
-rShape = error "A06 rShape undefined"
+rShape = elements allShapes
 
 
 instance Arbitrary Shape where
@@ -136,22 +136,41 @@ instance Arbitrary Shape where
 -- ** A07
 -- | Rotate a shape 90 degrees
 rotateShape :: Shape -> Shape
-rotateShape = error "A07 rotateShape undefined"
+rotateShape s = S (transpose (reverse (rows s)))
 
 -- ** A08
+-- | Add empty row. Add from top if n positive, from bottom if n negative
+addEmptyRow :: Int -> Shape -> Shape
+addEmptyRow n s = let width = fst (shapeSize s)
+                      empties = replicate (abs n) (emptyRow width)
+                  in case compare n 0 of
+                      GT -> S ( empties ++ rows s )
+                      LT -> S ( rows s  ++ empties)
+                      EQ -> s
+
+-- | Add empty column. Add from left if n positive, from right if n negative
+addEmptyColumn :: Int -> Shape -> Shape
+addEmptyColumn n s = let empty = replicate (abs n) Nothing in case compare n 0 of 
+                      GT -> S ([empty ++ row | row <- rows s])
+                      LT -> S ([row ++ empty | row <- rows s])
+                      EQ -> s
+
 -- | shiftShape adds empty squares above and to the left of the shape
 shiftShape :: (Int,Int) -> Shape -> Shape
-shiftShape = error "A08 shiftShape undefined"
+shiftShape (left, top) s = addEmptyRow top (addEmptyColumn left s)
 
 -- ** A09
 -- | padShape adds empty sqaure below and to the right of the shape
 padShape :: (Int,Int) -> Shape -> Shape
-padShape = error "A09 padShape undefined"
+padShape (right, bottom) s = addEmptyRow (-bottom) (addEmptyColumn (-right) s)
 
 -- ** A10
 -- | pad a shape to a given size
 padShapeTo :: (Int,Int) -> Shape -> Shape
-padShapeTo = error "A10 padShapeTo undefined"
+padShapeTo (width, height) s = padShape (width', height') s where
+    size    = shapeSize s
+    width'  = max (width - fst size) 0
+    height' = max (height - snd size) 0
 
 -- * Comparing and combining shapes
 
