@@ -12,3 +12,31 @@ fun x =
         x' + 5
 fun x = x' + 5 where
     x' = abs x
+
+L- IO
+------------------------
+
+Pure functions make it hard to have randomness and reading from files, as all functions should return the same output for the same input
+
+Type IO t to get around this: this package can have side-effects
+
+IO String: Side effects, and return a string, IO Integer: Side effects, and return an integer
+
+writeFile :: FilePath -> String -> IO ()
+	IO (): function returns an instruction to the operating system
+		(): Unit type (no return value, empty tuple, only a side effect)
+
+Interaction with the outside world has to go through IO
+
+Extract returned value from IO:
+	s <- readFile "Hello.txt"
+	NOT s = readfile (as this would be of type IO String, not string)
+	<- binds the result of an instruction (or monad??)
+
+do-notation:
+	Combining instructions
+	Has to __return__ an instruction with a result
+		return :: a -> IO a
+
+read :: Read a => String -> a
+
