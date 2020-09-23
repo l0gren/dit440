@@ -78,3 +78,24 @@ choose :: Random a => (a, a) -> Gen a
 
 elements :: [a] -> Gen a
 	Takes a list of elements and generates random values from that list
+
+oneof :: [Gen a] -> Gen a
+	Chooses one of a list of generators (useful if you want to combine generators into a single instance of abritrary)
+
+collect 
+	Gives you information about the generated values (if you want to see the percentages of what values are being generated in the testing)
+
+frequency :: [(Int, Gen a)] -> Gen a
+	If you want to adjust the distribution of values. The Int is the relative frequency of that generator being used. [(5, r1), (3, r2)]: 5:3 ratio of choosing r1 over r2
+
+Class Arbitrary
+	QuickCheck can generate anything of the class Arbitrary
+		Need to make your data type an instace of Arbitrary
+	basically: 
+		rType :: Gen Type
+		rType = elements [...]
+	Instance Arbitrary Type where
+		arbitrary = rType
+
+		abritrary can be defined with a do-block that combines instructions, ending in a return
+
