@@ -13,7 +13,7 @@ fun x =
 fun x = x' + 5 where
     x' = abs x
 
-L- IO
+L3B IO
 ------------------------
 
 Pure functions make it hard to have randomness and reading from files, as all functions should return the same output for the same input
@@ -40,3 +40,41 @@ do-notation:
 
 read :: Read a => String -> a
 
+L4A - Test Data Generators
+------------------------
+
+QuickCheck needs to know how to generate random values (knows for several known types)
+
+For some cases, we need to tell quickCheck how to generate random values
+	- Your own data type
+	- Custom restrictions on values 
+
+functions can take instructions as arguments
+
+A generic instruction is of type Monad
+	It can have any type of return type 
+	All can be built using Do-notation
+
+Gen: A type of monad
+	Instead of instructions to the OS, it gives instructions to QuickCheck!
+	IO t: ghc runs the instruction, creates value of type t
+	Gen t: QuickCheck library runs the instruction, creates random value of type t
+
+	arbitrary :: Gen t 
+		sample (arbitrary :: Gen t) will print out a sample of random values of type t
+
+	If you have a Gen t in the type signature, QuickCheck will infer that arbitrary should be of type Gen t
+
+	QuickCheck generates random values that go from small to big, not completely random (since it is made for testing)
+
+listOf :: Gen a -> Gen [a]
+	If you have a generator for random numbers, listOf will give you a generator for random lists of numbers
+
+vectorOf :: Int -> Gen a -> Gen [a]
+	Same as listOf, but with a fixed length (int)
+
+choose :: Random a => (a, a) -> Gen a
+	Pair (x, y) is a range between with values of type a must lie
+
+elements :: [a] -> Gen a
+	Takes a list of elements and generates random values from that list
