@@ -99,3 +99,35 @@ Class Arbitrary
 
 		abritrary can be defined with a do-block that combines instructions, ending in a return
 
+L4B - Higher Order Functions
+------------------------
+
+Functions are First-class citizens:
+	Anything that can be done in the language can also be done with functions (used as parameters, returned from other functions, stored in data...)
+
+map:
+	map :: (a -> b) -> [a] -> [b]
+	Applies function from a to b on a list of a's, returns a list of b's
+
+foldr:
+	foldr f b []     = b
+	foldr f b (x:xs) = f x (foldr f b xs)
+
+	b is the base case
+
+	foldr :: (a -> b -> b) -> b -> [a] -> b
+
+filter: 
+	filter :: (a -> Bool) -> [a] -> [a]
+
+Partial application:
+	You only give parts of the parameters of a function, and it will return a function that takes the rest of the parameters
+		:t take 2 :: [a] -> [a]
+			the missing parameter is a list, and the return value will be a list of take 2 list
+	Instead of complaining that you didn't give it enough parameters, it returns a function that expects the rest. If it still doesn't get it, it will complain.
+
+Lambda-expressions:
+	Syntax:
+		f = \a b c -> a^2 + b + c^2
+	start with \ to denote lambda, -> is delimiter between lhs and rhs, rhs will be returned
+	f will return a function that takes a b c and returns rhs.
