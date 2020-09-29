@@ -131,3 +131,21 @@ Lambda-expressions:
 		f = \a b c -> a^2 + b + c^2
 	start with \ to denote lambda, -> is delimiter between lhs and rhs, rhs will be returned
 	f will return a function that takes a b c and returns rhs.
+
+L5A - More HO Functions
+------------------------
+
+Function Composition
+	Just like in math: (f . g) x = f(g x)
+
+Returning functions
+	Int -> Int -> Int
+	Int -> (Int -> Int)
+	Equivalent type declarations. That is why partial application works: giving only the first Int will return a function that expects the second
+	(Int -> Int) -> Int is NOT the same
+
+Currying
+	
+Eta conversion
+	(Eta expansion) f x = g x <=> f = g (Eta reduction)
+	
