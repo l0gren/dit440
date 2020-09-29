@@ -178,15 +178,26 @@ padShapeTo (width, height) s = padShape (width', height') s where
 
 -- | Test if two shapes overlap
 overlaps :: Shape -> Shape -> Bool
-s1 `overlaps` s2 = error "A11 overlaps undefined"
+s1 `overlaps` s2 = or (zipWith rowsOverlap (rows s1) (rows s2))
+
+rowsOverlap :: Row -> Row -> Bool
+rowsOverlap r1 r2 = or [(x /= Nothing && y /= Nothing) | x <- r1, y <- r2]
 
 -- ** B02
 -- | zipShapeWith, like 'zipWith' for lists
 zipShapeWith :: (Square->Square->Square) -> Shape -> Shape -> Shape
-zipShapeWith = error "A12 zipShapeWith undefined"
+zipShapeWith f s1 s2 = S [[f x y | x <- r1, y <- r2] |
+                           r1 <- rows s1, r2 <- rows s2]
 
 -- ** B03
 -- | Combine two shapes. The two shapes should not overlap.
 -- The resulting shape will be big enough to fit both shapes.
 combine :: Shape -> Shape -> Shape
-s1 `combine` s2 = error "A13 zipShapeWith undefined"
+s1 `combine` s2 = zipShapeWith combineSquares (padShapeTo (w, h) s1) s2
+    where
+        (w, h) = (fst (shapeSize s1) + fst (shapeSize s2), 
+                  snd (shapeSize s1) + snd (shapeSize s2))
+        combineSquares (Just c1) Nothing = Just c1
+        combineSquares Nothing (Just c2) = Just c2
+        combineSquares _ _               = error "No overlap allowed"
+
