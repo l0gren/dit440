@@ -189,6 +189,17 @@ zipShapeWith :: (Square->Square->Square) -> Shape -> Shape -> Shape
 zipShapeWith f s1 s2 = S [[f x y | x <- r1, y <- r2] |
                            r1 <- rows s1, r2 <- rows s2]
 
+zipShapeWith' f (S (r1:rs1)) (S (r2:rs2)) = S ([zipWith f r1 r2])
+
+blackClashes :: Shape -> Shape -> Shape
+blackClashes s1 s2 = zipShapeWith' clash s1 s2  
+ where 
+  clash :: Square -> Square -> Square
+  clash Nothing Nothing = Nothing
+  clash Nothing s       = s
+  clash s       Nothing = s
+  clash (Just c1) (Just c2) = Just Black
+
 -- ** B03
 -- | Combine two shapes. The two shapes should not overlap.
 -- The resulting shape will be big enough to fit both shapes.
@@ -197,7 +208,8 @@ s1 `combine` s2 = zipShapeWith combineSquares (padShapeTo (w, h) s1) s2
     where
         (w, h) = (fst (shapeSize s1) + fst (shapeSize s2), 
                   snd (shapeSize s1) + snd (shapeSize s2))
-        combineSquares (Just c1) Nothing = Just c1
-        combineSquares Nothing (Just c2) = Just c2
-        combineSquares _ _               = error "No overlap allowed"
+        combineSquares (Just c1) Nothing   = Just c1
+        combineSquares Nothing (Just c2)   = Just c2
+        combineSquares Nothing Nothing     = Nothing
+        combineSquares (Just c1) (Just c2) = error "No overlap allowed"
 
