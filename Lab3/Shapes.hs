@@ -140,29 +140,42 @@ rotateShape s = S (transpose (reverse (rows s)))
 
 -- ** A08
 -- | Add empty row. Add from top if n positive, from bottom if n negative
-addEmptyRow :: Int -> Shape -> Shape
-addEmptyRow n s = let width = fst (shapeSize s)
-                      empties = replicate (abs n) (emptyRow width)
-                  in case compare n 0 of
-                      GT -> S ( empties ++ rows s )
-                      LT -> S ( rows s  ++ empties)
-                      EQ -> s
+-- Special case of addRows
+addEmptyRows :: Int -> Shape -> Shape
+addEmptyRows n s = addRows n Nothing s
 
 -- | Add empty column. Add from left if n positive, from right if n negative
-addEmptyColumn :: Int -> Shape -> Shape
-addEmptyColumn n s = let empty = replicate (abs n) Nothing in case compare n 0 of 
-                      GT -> S ([empty ++ row | row <- rows s])
-                      LT -> S ([row ++ empty | row <- rows s])
+-- Special case of addColumns
+addEmptyColumns :: Int -> Shape -> Shape
+addEmptyColumns n s = addColumns n Nothing s
+
+-- | Generic case, add rows of any squares to a shape
+-- Add from top if n positive, from bottom if n negative
+addRows :: Int -> Square -> Shape -> Shape
+addRows n sq s = let width = fst (shapeSize s)
+                     squares = replicate (abs n) (replicate width sq)
+                  in case compare n 0 of
+                      GT -> S ( squares ++ rows s )
+                      LT -> S ( rows s  ++ squares)
+                      EQ -> s 
+
+-- | Generic case, add columns of any squares to a shape
+-- Add from left if n positive, from right if n negative
+addColumns :: Int -> Square -> Shape -> Shape
+addColumns n sq s = let squares = replicate (abs n) sq
+                  in case compare n 0 of 
+                      GT -> S ([squares ++ row | row <- rows s])
+                      LT -> S ([row ++ squares | row <- rows s])
                       EQ -> s
 
 -- | shiftShape adds empty squares above and to the left of the shape
 shiftShape :: (Int,Int) -> Shape -> Shape
-shiftShape (left, top) s = addEmptyRow top (addEmptyColumn left s)
+shiftShape (left, top) s = addEmptyRows top (addEmptyColumns left s)
 
 -- ** A09
--- | padShape adds empty sqaure below and to the right of the shape
+-- | padShape adds empty sqaures below and to the right of the shape
 padShape :: (Int,Int) -> Shape -> Shape
-padShape (right, bottom) s = addEmptyRow (-bottom) (addEmptyColumn (-right) s)
+padShape (right, bottom) s = addEmptyRows (-bottom) (addEmptyColumns (-right) s)
 
 -- ** A10
 -- | pad a shape to a given size
@@ -184,32 +197,24 @@ rowsOverlap :: Row -> Row -> Bool
 rowsOverlap r1 r2 = or [(x /= Nothing && y /= Nothing) | x <- r1, y <- r2]
 
 -- ** B02
+
 -- | zipShapeWith, like 'zipWith' for lists
 zipShapeWith :: (Square->Square->Square) -> Shape -> Shape -> Shape
-zipShapeWith f s1 s2 = S [[f x y | x <- r1, y <- r2] |
-                           r1 <- rows s1, r2 <- rows s2]
-
-zipShapeWith' f (S (r1:rs1)) (S (r2:rs2)) = S ([zipWith f r1 r2])
-
-blackClashes :: Shape -> Shape -> Shape
-blackClashes s1 s2 = zipShapeWith' clash s1 s2  
- where 
-  clash :: Square -> Square -> Square
-  clash Nothing Nothing = Nothing
-  clash Nothing s       = s
-  clash s       Nothing = s
-  clash (Just c1) (Just c2) = Just Black
+zipShapeWith f (S rs1) (S rs2) = S ((zipWith . zipWith ) f rs1 rs2)
 
 -- ** B03
+
 -- | Combine two shapes. The two shapes should not overlap.
 -- The resulting shape will be big enough to fit both shapes.
 combine :: Shape -> Shape -> Shape
-s1 `combine` s2 = zipShapeWith combineSquares (padShapeTo (w, h) s1) s2
+s1 `combine`s2 = zipShapeWith merge s1' s2'
     where
-        (w, h) = (fst (shapeSize s1) + fst (shapeSize s2), 
-                  snd (shapeSize s1) + snd (shapeSize s2))
-        combineSquares (Just c1) Nothing   = Just c1
-        combineSquares Nothing (Just c2)   = Just c2
-        combineSquares Nothing Nothing     = Nothing
-        combineSquares (Just c1) (Just c2) = error "No overlap allowed"
-
+        -- Make sure new shape fits the combination by padding both
+        (w, h)     = (max (fst (shapeSize s1)) (fst (shapeSize s2)),
+                      max (snd (shapeSize s1)) (snd (shapeSize s2)))
+        (s1', s2') = (padShapeTo (w, h) s1, padShapeTo (w, h) s2)
+        merge :: Square -> Square -> Square
+        merge Nothing Nothing   = Nothing
+        merge (Just c1) Nothing = Just c1
+        merge Nothing (Just c2) = Just c2
+        merge _ _               = error "No overlap allowed"
