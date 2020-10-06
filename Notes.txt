@@ -148,4 +148,21 @@ Currying
 	
 Eta conversion
 	(Eta expansion) f x = g x <=> f = g (Eta reduction)
-	
+
+L5B - Recursive Data Types
+------------------------
+Circular definitions don't work too well on numbers.
+
+Circular definitions on lists work in Haskell, because of Lazy Evaluation.
+
+$: function application operator
+	$ :: (a -> b) -> a -> b
+	Lowest priority in evaluation of all operators
+		The things on its right are evaluated and can be treated as a single arguments (replaces parentheses)
+
+Constructor functions: ways of building a data type with data, will expect data and a reference to itself if recursive
+	data Hand = Empty | Add Card Hand
+		Add: constructor
+		Card: data
+		Hand: itself
+
