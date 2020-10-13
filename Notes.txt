@@ -166,3 +166,10 @@ Constructor functions: ways of building a data type with data, will expect data 
 		Card: data
 		Hand: itself
 
+L6B - Recursive Data Types
+------------------------
+When pattern-matching, you can write something like:
+	f e@(Cons x y) = ... e
+	instead of
+	f (Cons x y) = ... (Cons x y)
+	to get a reference to the entire thing, and not have to write it out over and over again!
