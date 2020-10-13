@@ -193,8 +193,10 @@ padShapeTo (width, height) s = padShape (width', height') s where
 overlaps :: Shape -> Shape -> Bool
 s1 `overlaps` s2 = or (zipWith rowsOverlap (rows s1) (rows s2))
 
+-- | Test if two rows overlap. True iff any non-Nothing square in common
 rowsOverlap :: Row -> Row -> Bool
-rowsOverlap r1 r2 = or [(x /= Nothing && y /= Nothing) | x <- r1, y <- r2]
+rowsOverlap (x:xs) (y:ys) = x /= Nothing && y /= Nothing || rowsOverlap xs ys 
+rowsOverlap _ _           = False
 
 -- ** B02
 
