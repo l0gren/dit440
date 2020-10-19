@@ -173,3 +173,31 @@ When pattern-matching, you can write something like:
 	instead of
 	f (Cons x y) = ... (Cons x y)
 	to get a reference to the entire thing, and not have to write it out over and over again!
+
+L7 - Datastructures
+------------------------
+lookup :: a -> [(a,b)] -> Maybe b
+	looks up value b at place a, Nothing if no a
+
+Smart Constructors:
+	define functions that behave cleverly for your data type and construct data of the form you want
+	Instead of just calling the datatype constructor, call the function that constructs data the way you want it
+	
+		Expr = Add Expr Expr
+		...
+		add :: Expr -> Expr ->
+		add x Cons 0 = x...
+		...
+		add x y = Add x y
+
+	rather than making an Add in your functions, call add, which handles the cases of adding by 0 smartly!
+
+import qualified Type as T
+...
+T.function -- function can be defined elsewhere, but you will use the one from Type
+
+uncurry: makes two arguments be a tuple 
+uncurry :: (a->b->c) -> (a,b) -> c 
+
+Data.List.nub : removes copies
+nubBy: takes a function to specify what a copy is
